@@ -1,0 +1,10 @@
+*.log
+
+# Dependencies
+node_modules/
+
+# Build folder
+dist/
+
+# API keys and secrets
+.env

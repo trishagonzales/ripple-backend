@@ -1,0 +1,21 @@
+API Routes
+
+*  - protected routes
+
+POST	/users
+GET*	/users/me
+PUT*	/users/me
+DEL*	/users/me
+
+GET   /profiles
+GET   /profiles/:id
+PUT*  /profiles/:id
+
+GET   /posts
+GET   /posts/:id
+GET	  /posts?user=id
+POST* /posts
+PUT*	/posts/:id
+DEL*	/posts/:id
+PUT*   /posts/:id/like
+PUT*   /posts/:id/unlike
