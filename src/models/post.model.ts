@@ -4,10 +4,10 @@ export interface Post {
   title: string;
   body: string;
   author: mongoose.Schema.Types.ObjectId;
+  image?: string;
 
   dateCreated: number;
   lastModified?: number;
-
   likes?: mongoose.Schema.Types.ObjectId[];
 }
 
@@ -29,6 +29,10 @@ const postSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  image: {
+    type: String,
+    maxlength: 255
   },
 
   dateCreated: { type: Date, default: Date.now, required: true },

@@ -9,6 +9,7 @@ export interface QueryParams {
 }
 
 export class PostService {
+  //  GET FEED / ALL POSTS FROM DATABASE
   public static async getAllPosts(queryParams?: QueryParams) {
     const { pageSize, pageNumber, sortBy } = queryParams;
     const posts = await PostModel.find({})
@@ -20,6 +21,7 @@ export class PostService {
     return posts;
   }
 
+  //  GET ALL POSTS FROM ONE USER
   public static async getUserPosts(userID: string, queryParams?: QueryParams) {
     const { pageSize, pageNumber, sortBy } = queryParams;
 
@@ -35,30 +37,34 @@ export class PostService {
     return posts;
   }
 
+  //  GET ALL LIKED POSTS
   public static async getLikedPosts(userID: string, queryParams?: QueryParams) {
     const user = await UserModel.findById(userID).populate('likedPosts');
     return user.likedPosts;
   }
 
+  //  GET A SINGLE POST
   public static async getOnePost(postID: string) {
     const post = await PostModel.findById(postID).populate(
       'author',
-      'profile.firstName profile.lastName -_id'
+      '_id profile.firstName profile.lastName'
     );
     if (!post) throw new HttpError('Post not found.', 404);
 
     return post;
   }
 
-  public static async createNewPost(post: { title: string; body: string }, authorID: string) {
+  //  CREATE NEW POST
+  public static async createNewPost(input: { title: string; body: string }, authorID: string) {
     const newPost = new PostModel({
-      title: post.title,
-      body: post.body,
+      title: input.title,
+      body: input.body,
       author: authorID
     });
     return await newPost.save();
   }
 
+  //  UPDATE POST
   public static async updatePost(
     newPost: { title: string; body: string },
     postID: string,
@@ -76,14 +82,32 @@ export class PostService {
     post.lastModified = Date.now();
 
     await post.save();
-
     return post;
   }
 
+  //  DELETE POST
   public static async deletePost(postID: string) {
     const deletedPost = await PostModel.findByIdAndDelete(postID);
     if (!deletedPost) throw new HttpError('Post not found.', 404);
-
     return deletedPost;
+  }
+
+  //  GET IMAGE PATH OF POST
+  public static async getImage(postID: string) {
+    const post = await PostModel.findById(postID);
+    return post.image;
+  }
+
+  //  UPLOAD/UPDATE IMAGE
+  public static async uploadImage(path: string, postID: string, userID: string) {
+    const post = await PostModel.findById(postID);
+    if (!post) throw new HttpError('Post not found', 404);
+
+    //  Validate if user owns the post
+    if (JSON.stringify(post.author) != JSON.stringify(userID))
+      throw new HttpError('Access denied.', 401);
+
+    post.image = path;
+    await post.save();
   }
 }

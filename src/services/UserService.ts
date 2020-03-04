@@ -10,9 +10,7 @@ export class UserService {
     this._id = id;
   }
 
-  /**
-   * Get all user profiles
-   */
+  //  GET ALL PROFILES
   public static async getAllProfiles(queryParams: QueryParams) {
     const { pageSize, pageNumber, sortBy } = queryParams;
     const users = await UserModel.find({})
@@ -26,10 +24,7 @@ export class UserService {
     return profiles;
   }
 
-  /**
-   * Get a single user profile
-   * @param userID
-   */
+  //  GET A SINGLE PROFILE
   public static async getProfile(userID: string) {
     const user = await UserModel.findOne({ _id: userID });
     if (!user) throw new HttpError('No user profile found.', 404);
@@ -37,20 +32,35 @@ export class UserService {
     return user.profile;
   }
 
+  //  GET AVATAR IMAGE
+  public static async getAvatar(userID: string) {
+    const user = await UserModel.findById(userID);
+    return user.profile.avatar;
+  }
+
+  //  UPDATE PROFILE
   public async updateProfile(newProfile: UserProfile) {
     const user = await UserModel.findById(this._id);
-
-    user.profile = newProfile;
+    user.profile = { ...newProfile };
     const { profile } = await user.save();
 
     return profile;
   }
 
+  //  UPDATE/UPLOAD AVATAR IMAGE
+  public async uploadAvatar(path: string) {
+    const user = await UserModel.findById(this._id);
+    user.profile.avatar = path;
+    await user.save();
+  }
+
+  //  GET USER / ACCOUNT DATA
   public async getAccountData() {
     const user = await UserModel.findById(this._id).select('email profile');
     return user;
   }
 
+  //  UPDATE EMAIL
   public async updateEmail(newEmail: string) {
     const user = await UserModel.findById(this._id);
     user.email = newEmail;
@@ -59,6 +69,7 @@ export class UserService {
     return user.email;
   }
 
+  //  UPDATE PASSWORD
   public async updatePassword(newPassword: string) {
     const user = await UserModel.findById(this._id);
     const hashedPass = await UserModel.hashPassword(newPassword);
@@ -66,15 +77,14 @@ export class UserService {
     await user.save();
   }
 
+  //  VALIDATE PASSWORD
   public async validatePassword(password: string) {
     const user = await UserModel.findById(this._id);
     const isPassValid = await user.validatePassword(password);
     if (!isPassValid) throw new HttpError('Invalid password.', 400);
   }
 
-  /**
-   * Delete account
-   */
+  //  DELETE ACCOUNT
   public async deleteAccount() {
     const user = await UserModel.findById(this._id);
     if (!user) throw new HttpError('User not found.', 404);
@@ -82,10 +92,7 @@ export class UserService {
     await UserModel.deleteOne({ _id: this._id });
   }
 
-  /**
-   * Add current user to post's like list
-   * @param postID post to like
-   */
+  //  ADD USER TO LIKE LIST
   public async likePost(postID: string) {
     const post = await PostModel.findOne({ _id: postID });
     if (!post) throw new HttpError('Post not found.', 404);
@@ -99,10 +106,7 @@ export class UserService {
     await post.save();
   }
 
-  /**
-   * Remove current user from post's like list
-   * @param postID post to unlike
-   */
+  //  REMOVE USER FROM LIKE LIST
   public async unlikePost(postID: string) {
     const post = await PostModel.findOne({ _id: postID });
     if (!post) throw new HttpError('No post found.', 404);

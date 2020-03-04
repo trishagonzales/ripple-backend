@@ -6,9 +6,7 @@ import { PostService } from '../../services/PostService';
 
 const router = express.Router();
 
-/**
- * Get all posts
- */
+//  GET ALL POSTS
 router.get(
   '/posts',
   a(async (req, res) => {
@@ -17,9 +15,7 @@ router.get(
   })
 );
 
-/**
- * Get all posts from a single user
- */
+//  GET ALL POSTS FROM A SINGLE USER
 router.get(
   '/posts/user/:id',
   a(async (req, res) => {
@@ -30,9 +26,7 @@ router.get(
   })
 );
 
-/**
- *  Get liked posts
- */
+//  GET LIKED POSTS
 router.get(
   '/posts/liked-posts',
   auth,
@@ -43,9 +37,7 @@ router.get(
   })
 );
 
-/**
- * Get one post
- */
+//  GET ONE POST
 router.get(
   '/posts/:id',
   a(async (req, res) => {
@@ -54,9 +46,7 @@ router.get(
   })
 );
 
-/**
- * Create new post
- */
+//  CREATE NEW POST
 router.post(
   '/posts',
   auth,
@@ -68,9 +58,7 @@ router.post(
   })
 );
 
-/**
- * Update post
- */
+//  UPDATE POST
 router.put(
   '/posts/:id',
   auth,
@@ -83,9 +71,7 @@ router.put(
   })
 );
 
-/**
- * Delete post
- */
+//  DELETE POST
 router.delete(
   '/posts/:id',
   auth,
@@ -96,6 +82,7 @@ router.delete(
   })
 );
 
+//  LIKE A POST
 router.put(
   '/posts/:id/likes',
   auth,
@@ -107,6 +94,7 @@ router.put(
   })
 );
 
+//  UNLIKE A POST
 router.put(
   '/posts/:id/unlikes',
   auth,

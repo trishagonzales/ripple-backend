@@ -6,9 +6,7 @@ import { AuthService, SignupInput } from '../../services/AuthService';
 
 const router = express.Router();
 
-/**
- * Create New User
- */
+//  CREATE NEW USER
 router.post(
   '/users',
   a(async (req, res) => {
@@ -23,9 +21,7 @@ router.post(
   })
 );
 
-/**
- *  Get User Data
- */
+//  GET USER DATA
 router.get(
   '/users/me',
   auth,
@@ -37,9 +33,7 @@ router.get(
   })
 );
 
-/**
- *  Update Email
- */
+//  UPDATE EMAIL
 router.put(
   '/users/email',
   auth,
@@ -52,9 +46,7 @@ router.put(
   })
 );
 
-/**
- *  Update Password
- */
+//  UPDATE PASSWORD
 router.put(
   '/users/password',
   auth,
@@ -67,9 +59,7 @@ router.put(
   })
 );
 
-/**
- *  Validate password
- */
+//  VALIDATE PASSWORD
 router.post(
   '/users/validate-password',
   auth,
@@ -82,9 +72,7 @@ router.post(
   })
 );
 
-/**
- * Delete User
- */
+//  DELETE USER
 router.delete(
   '/users/me',
   auth,

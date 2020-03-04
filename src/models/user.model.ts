@@ -13,6 +13,7 @@ export interface User {
 }
 
 export interface UserProfile {
+  avatar?: string;
   firstName: string;
   lastName: string;
   gender?: 'male' | 'female' | 'not specified';
@@ -48,9 +49,9 @@ const userSchema = new mongoose.Schema({
   },
 
   profile: new mongoose.Schema({
+    avatar: { type: String, maxlength: 255 },
     firstName: { type: String, maxlength: 255, trim: true, required: true },
     lastName: { type: String, maxlength: 255, trim: true, required: true },
-
     gender: { type: String, enum: ['male', 'female', 'not specified'] },
     age: { type: Number, min: 1, max: 1000 },
     bio: { type: String, maxlength: 1024 },

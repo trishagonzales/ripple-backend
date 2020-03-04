@@ -6,9 +6,7 @@ import { UserService } from '../../services/UserService';
 
 const router = express.Router();
 
-/**
- * Get all profiles
- */
+//  GET ALL PROFILES
 router.get(
   '/profiles',
   a(async (req: Request, res: Response, next: NextFunction) => {
@@ -19,9 +17,7 @@ router.get(
   })
 );
 
-/**
- * Get one profile
- */
+//  GET ONE PROFILE
 router.get(
   '/profiles/:id',
   a(async (req: Request, res: Response, next: NextFunction) => {
@@ -30,9 +26,7 @@ router.get(
   })
 );
 
-/**
- * Update profile
- */
+//  UPDATE PROFILE
 router.put(
   '/profiles/me',
   auth,

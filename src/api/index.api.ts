@@ -2,6 +2,7 @@ import authRoutes from './routes/auth.route';
 import userRoutes from './routes/user.route';
 import profileRoutes from './routes/profile.route';
 import postRoutes from './routes/post.route';
+import uploadRoutes from './routes/upload.route';
 import { Express } from 'express';
 
 export default (app: Express) => {
@@ -9,4 +10,5 @@ export default (app: Express) => {
   app.use('/api', userRoutes);
   app.use('/api', profileRoutes);
   app.use('/api', postRoutes);
+  app.use('/api', uploadRoutes);
 };
