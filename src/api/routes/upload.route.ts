@@ -4,30 +4,32 @@ import a from '../middleware/asyncWrap';
 import upload, { sendFileOptions } from '../middleware/multer';
 import { UserService } from '../../services/UserService';
 import { PostService } from '../../services/PostService';
+import { HttpError } from '../../util/errorHandler';
+const log = require('debug')('uploadRoutes');
 
 const router = express.Router();
 
 //  GET POST IMAGE
 router.get(
-  '/uploads/image/:id',
+  '/uploads/image/:filename',
   a(async (req, res) => {
-    const filename = await PostService.getImage(req.params.id);
-    if (!filename) res.status(200).send();
+    const filename = req.params.filename;
+    if (!filename) throw new HttpError('Image filename is required.', 400);
 
-    res.status(200).sendFile(filename, sendFileOptions);
+    res.status(200).sendFile(filename, sendFileOptions, err => log(err));
   })
 );
 
 //  UPLOAD POST IMAGE
-router.post(
+router.put(
   '/uploads/image/:id',
   auth,
   upload.single('image'),
   a(async (req, res) => {
     const { file, params, user } = req;
-    await PostService.uploadImage(file.filename, params.id, user._id);
+    const filename = await PostService.uploadImage(file.filename, params.id, user._id);
 
-    res.status(200).send();
+    res.status(200).send(filename);
   })
 );
 
@@ -43,7 +45,7 @@ router.get(
 );
 
 //  UPLOAD USER'S AVATAR / PROFILE PICTURE
-router.post(
+router.put(
   '/uploads/avatar',
   auth,
   upload.single('avatar'),

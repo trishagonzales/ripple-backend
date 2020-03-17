@@ -47,7 +47,7 @@ export class PostService {
   public static async getOnePost(postID: string) {
     const post = await PostModel.findById(postID).populate(
       'author',
-      '_id profile.firstName profile.lastName'
+      '_id profile.firstName profile.lastName image'
     );
     if (!post) throw new HttpError('Post not found.', 404);
 
@@ -95,11 +95,12 @@ export class PostService {
   //  GET IMAGE PATH OF POST
   public static async getImage(postID: string) {
     const post = await PostModel.findById(postID);
+    if (!post.image) throw new HttpError('No image found.', 404);
     return post.image;
   }
 
   //  UPLOAD/UPDATE IMAGE
-  public static async uploadImage(path: string, postID: string, userID: string) {
+  public static async uploadImage(filename: string, postID: string, userID: string) {
     const post = await PostModel.findById(postID);
     if (!post) throw new HttpError('Post not found', 404);
 
@@ -107,7 +108,8 @@ export class PostService {
     if (JSON.stringify(post.author) != JSON.stringify(userID))
       throw new HttpError('Access denied.', 401);
 
-    post.image = path;
+    post.image = filename;
     await post.save();
+    return post.image;
   }
 }
