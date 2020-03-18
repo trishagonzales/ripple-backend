@@ -13,7 +13,7 @@ export class PostService {
   public static async getAllPosts(queryParams?: QueryParams) {
     const { pageSize, pageNumber, sortBy } = queryParams;
     const posts = await PostModel.find({})
-      .populate('author', 'profile.firstName profile.lastName -_id')
+      .populate('author', 'profile.firstName profile.lastName profile.avatar -_id')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort(sortBy);
@@ -29,7 +29,7 @@ export class PostService {
     if (!user) throw new HttpError('User not found.', 400);
 
     const posts = await PostModel.find({ author: userID })
-      .populate('author', 'profile.firstName profile.lastName -_id')
+      .populate('author', 'profile.firstName profile.lastName profile.avatar -_id')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort(sortBy);
