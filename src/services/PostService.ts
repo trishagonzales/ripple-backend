@@ -1,3 +1,4 @@
+import fs from 'fs';
 import UserModel from '../models/user.model';
 import PostModel from '../models/post.model';
 import { HttpError } from '../util/errorHandler';
@@ -45,10 +46,7 @@ export class PostService {
 
   //  GET A SINGLE POST
   public static async getOnePost(postID: string) {
-    const post = await PostModel.findById(postID).populate(
-      'author',
-      '_id profile.firstName profile.lastName image'
-    );
+    const post = await PostModel.findById(postID).populate('author', '_id profile.firstName profile.lastName image');
     if (!post) throw new HttpError('Post not found.', 404);
 
     return post;
@@ -65,17 +63,12 @@ export class PostService {
   }
 
   //  UPDATE POST
-  public static async updatePost(
-    newPost: { title: string; body: string },
-    postID: string,
-    userID: string
-  ) {
+  public static async updatePost(newPost: { title: string; body: string }, postID: string, userID: string) {
     const post = await PostModel.findById(postID);
     if (!post) throw new HttpError('Post not found.', 404);
 
     //  Validate if user owns the post
-    if (JSON.stringify(post.author) != JSON.stringify(userID))
-      throw new HttpError('Access denied.', 401);
+    if (JSON.stringify(post.author) != JSON.stringify(userID)) throw new HttpError('Access denied.', 401);
 
     post.title = newPost.title;
     post.body = newPost.body;
@@ -92,24 +85,36 @@ export class PostService {
     return deletedPost;
   }
 
-  //  GET IMAGE PATH OF POST
+  //  GET POST IMAGE
   public static async getImage(postID: string) {
-    const post = await PostModel.findById(postID);
-    if (!post.image) throw new HttpError('No image found.', 404);
+    const post = await PostModel.findOne({ _id: postID });
+    if (!post) throw new HttpError('No post found', 404);
+    if (!post.image) throw new HttpError('No image found for this post.', 404);
+
     return post.image;
   }
 
-  //  UPLOAD/UPDATE IMAGE
-  public static async uploadImage(filename: string, postID: string, userID: string) {
+  //  VALIDATE IMAGE BEING UPLOADED
+  public static async validateImageUpload(postID: string, userID: string) {
     const post = await PostModel.findById(postID);
     if (!post) throw new HttpError('Post not found', 404);
-
     //  Validate if user owns the post
-    if (JSON.stringify(post.author) != JSON.stringify(userID))
-      throw new HttpError('Access denied.', 401);
+    if (JSON.stringify(post.author) != JSON.stringify(userID)) throw new HttpError('Access denied.', 401);
+  }
+
+  //  UPLOAD/UPDATE IMAGE
+  public static async uploadImage(filename: string, postID: string) {
+    const post = await PostModel.findById(postID);
+    const oldfile = post.image;
 
     post.image = filename;
     await post.save();
+
+    if (oldfile)
+      fs.unlink(process.cwd() + '/public/' + oldfile, (err) => {
+        if (err) throw err;
+      });
+
     return post.image;
   }
 }

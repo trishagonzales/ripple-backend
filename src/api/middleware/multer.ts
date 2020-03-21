@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 
-// const upload = multer({ storage, onError: (err: any, next: any) => return throw new HttpError('Unexpected error occurred.', 500) });
+const upload = multer({ storage });
 
 export const sendFileOptions = {
   root: process.cwd() + '/public'

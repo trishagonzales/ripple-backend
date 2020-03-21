@@ -1,3 +1,4 @@
+import fs from 'fs';
 import UserModel, { UserProfile } from '../models/user.model';
 import PostModel from '../models/post.model';
 import { HttpError } from '../util/errorHandler';
@@ -18,8 +19,7 @@ export class UserService {
       .limit(pageSize)
       .sort(sortBy)
       .select('profile');
-
-    const profiles = users.map(user => user.profile);
+    const profiles = users.map((user) => user.profile);
 
     return profiles;
   }
@@ -32,9 +32,12 @@ export class UserService {
     return user.profile;
   }
 
-  //  GET AVATAR IMAGE
+  //  GET PROFILE PICTURE
   public static async getAvatar(userID: string) {
-    const user = await UserModel.findById(userID);
+    const user = await UserModel.findOne({ _id: userID });
+    if (!user) throw new HttpError('User not found.', 404);
+    if (!user.profile.avatar) throw new HttpError('No profile picture found.', 404);
+
     return user.profile.avatar;
   }
 
@@ -48,10 +51,17 @@ export class UserService {
   }
 
   //  UPDATE/UPLOAD AVATAR IMAGE
-  public async uploadAvatar(path: string) {
+  public async uploadAvatar(filename: string) {
     const user = await UserModel.findById(this._id);
-    user.profile.avatar = path;
+    const oldfile = user.profile.avatar;
+
+    user.profile.avatar = filename;
     await user.save();
+
+    if (oldfile)
+      fs.unlink(process.cwd() + '/public/' + oldfile, (err) => {
+        if (err) throw err;
+      });
   }
 
   //  GET USER / ACCOUNT DATA
@@ -99,8 +109,7 @@ export class UserService {
 
     const user = await UserModel.findById(this._id);
     //  User already liked this post
-    if (post.likes.indexOf(user._id) !== -1)
-      throw new HttpError('User already liked this post.', 400);
+    if (post.likes.indexOf(user._id) !== -1) throw new HttpError('User already liked this post.', 400);
     //  User haven't liked this post yet
     post.likes.push(user._id);
     await post.save();
