@@ -44,7 +44,7 @@ export class UserService {
   //  UPDATE PROFILE
   public async updateProfile(newProfile: UserProfile) {
     const user = await UserModel.findById(this._id);
-    user.profile = { ...newProfile };
+    user.profile = { ...user.profile, ...newProfile };
     const { profile } = await user.save();
 
     return profile;

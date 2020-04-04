@@ -28,7 +28,7 @@ router.get(
 
 //  UPDATE PROFILE
 router.put(
-  '/profiles/me',
+  '/profiles',
   auth,
   a(async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
