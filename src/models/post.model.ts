@@ -19,26 +19,26 @@ const postSchema = new mongoose.Schema({
     type: String,
     maxlength: 255,
     trim: true,
-    required: true
+    required: true,
   },
   body: {
     type: String,
-    maxlength: 2048
+    maxlength: 10000,
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
   },
   image: {
     type: String,
-    maxlength: 255
+    maxlength: 255,
   },
 
   dateCreated: { type: Date, default: Date.now, required: true },
   lastModifed: { type: Date },
 
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 const PostModel: PostModel = mongoose.model<PostDocument, PostModel>('Post', postSchema);

@@ -14,10 +14,7 @@ router.post(
     const { user, token } = await AuthService.signup(validInput);
     const userData = await user.getAccountData();
 
-    res
-      .status(201)
-      .header('x-auth-token', token)
-      .send(userData);
+    res.status(201).header('x-auth-token', token).send(userData);
   })
 );
 

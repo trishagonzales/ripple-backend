@@ -8,8 +8,7 @@ export interface User {
   email: string;
   password: string;
   profile: UserProfile;
-  posts: Post[];
-  likedPosts: Post[];
+  likedPosts: mongoose.Schema.Types.ObjectId[];
 }
 
 export interface UserProfile {
@@ -38,14 +37,14 @@ const userSchema = new mongoose.Schema({
     maxlength: 255,
     trim: true,
     unique: true,
-    required: true
+    required: true,
   },
   password: {
     type: String,
     minlength: 5,
     maxlength: 255,
     trim: true,
-    required: true
+    required: true,
   },
 
   profile: new mongoose.Schema({
@@ -55,18 +54,17 @@ const userSchema = new mongoose.Schema({
     gender: { type: String, enum: ['male', 'female', 'not specified'] },
     age: { type: Number, min: 1, max: 1000 },
     bio: { type: String, maxlength: 1024 },
-    location: { type: String, maxlength: 255 }
+    location: { type: String, maxlength: 255 },
   }),
 
-  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
-  likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
+  likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
 });
 
 /**
  * Generate auth token using user's id
  * @returns JWT token
  */
-userSchema.methods.generateToken = function() {
+userSchema.methods.generateToken = function () {
   return jwt.sign({ _id: this._id }, config.JWT_KEY);
 };
 
@@ -74,7 +72,7 @@ userSchema.methods.generateToken = function() {
  * @param password input password
  * @returns Promise obj - whether input password is valid
  */
-userSchema.methods.validatePassword = function(password) {
+userSchema.methods.validatePassword = function (password: string) {
   return bcryptjs.compare(password, this.password);
 };
 
@@ -82,7 +80,7 @@ userSchema.methods.validatePassword = function(password) {
  * @param passsword input password
  * @returns Promise obj - hashed password
  */
-userSchema.statics.hashPassword = async function(password) {
+userSchema.statics.hashPassword = async function (password) {
   const salt = await bcryptjs.genSalt(10);
   return bcryptjs.hash(password, salt);
 };

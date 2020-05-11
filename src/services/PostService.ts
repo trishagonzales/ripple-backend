@@ -18,14 +18,12 @@ export class PostService {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort(sortBy);
-
     return posts;
   }
 
   //  GET ALL POSTS FROM ONE USER
   public static async getUserPosts(userID: string, queryParams?: QueryParams) {
     const { pageSize, pageNumber, sortBy } = queryParams;
-
     const user = await UserModel.findById(userID);
     if (!user) throw new HttpError('User not found.', 400);
 
@@ -34,14 +32,19 @@ export class PostService {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort(sortBy);
-
     return posts;
   }
 
   //  GET ALL LIKED POSTS
   public static async getLikedPosts(userID: string, queryParams?: QueryParams) {
+    const { pageSize, pageNumber, sortBy } = queryParams;
     const user = await UserModel.findById(userID).populate('likedPosts');
-    return user.likedPosts;
+    const posts = await PostModel.find({ _id: { $in: user.likedPosts } })
+      .populate('author', '_id profile.firstName profile.lastName profile.avatar')
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort(sortBy);
+    return posts;
   }
 
   //  GET A SINGLE POST
@@ -60,7 +63,7 @@ export class PostService {
     const newPost = new PostModel({
       title: input.title,
       body: input.body,
-      author: authorID
+      author: authorID,
     });
     return await newPost.save();
   }

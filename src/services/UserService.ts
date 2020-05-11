@@ -111,7 +111,9 @@ export class UserService {
     //  User already liked this post
     if (post.likes.indexOf(user._id) !== -1) throw new HttpError('User already liked this post.', 400);
     //  User haven't liked this post yet
+    user.likedPosts.push(post._id);
     post.likes.push(user._id);
+    await user.save();
     await post.save();
   }
 
@@ -122,9 +124,13 @@ export class UserService {
 
     const user = await UserModel.findById(this._id);
     const userIndex = post.likes.indexOf(user._id);
+    const postIndex = user.likedPosts.indexOf(post._id);
     //  User not on liked list
     if (userIndex === -1) throw new HttpError('User already unliked this post.', 400);
     //  User is on liked list
+    user.likedPosts.splice(postIndex, 1);
     post.likes.splice(userIndex, 1);
+    await user.save();
+    await post.save();
   }
 }

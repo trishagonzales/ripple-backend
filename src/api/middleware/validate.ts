@@ -6,66 +6,39 @@ type ValidationSchema = 'signup' | 'login' | 'profile' | 'email' | 'password' | 
 const schemas = {
   //  SIGNUP
   signup: Joi.object({
-    email: Joi.string()
-      .email()
-      .required(),
+    email: Joi.string().email().required(),
     password: Joi.string().required(),
-    firstName: Joi.string()
-      .max(255)
-      .required(),
-    lastName: Joi.string()
-      .max(255)
-      .required()
+    firstName: Joi.string().max(255).required(),
+    lastName: Joi.string().max(255).required(),
   }),
 
   //  LOGIN
   login: Joi.object({
-    email: Joi.string()
-      .email()
-      .required(),
-    password: Joi.string().required()
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 
   //  PROFILE
   profile: Joi.object({
-    firstName: Joi.string()
-      .max(255)
-      .required(),
-    lastName: Joi.string()
-      .max(255)
-      .required(),
+    firstName: Joi.string().max(255).required(),
+    lastName: Joi.string().max(255).required(),
     gender: Joi.string(),
-    age: Joi.number()
-      .min(1)
-      .max(1000),
+    age: Joi.number().min(1).max(1000),
     bio: Joi.string().max(1024),
-    location: Joi.string().max(255)
+    location: Joi.string().max(255),
   }),
 
   //  EMAIL
-  email: Joi.string()
-    .min(2)
-    .max(255)
-    .email()
-    .required(),
+  email: Joi.string().min(2).max(255).email().required(),
 
   //  PASSWORD
-  password: Joi.string()
-    .min(6)
-    .max(255)
-    .required(),
+  password: Joi.string().min(6).max(255).required(),
 
   //  POST
   post: Joi.object({
-    title: Joi.string()
-      .min(1)
-      .max(512)
-      .required(),
-    body: Joi.string()
-      .min(1)
-      .max(5000)
-      .required()
-  })
+    title: Joi.string().min(1).max(512).required(),
+    body: Joi.string().min(1).max(5000).required(),
+  }),
 };
 
 const validate = <T>(inputToValidate: T, schema: ValidationSchema): T => {
