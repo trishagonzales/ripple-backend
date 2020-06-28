@@ -4,8 +4,6 @@ import a from '../middleware/asyncWrap';
 import upload, { sendFileOptions } from '../middleware/multer';
 import { UserService } from '../../services/UserService';
 import { PostService } from '../../services/PostService';
-import { HttpError } from '../../util/errorHandler';
-import { MulterError } from 'multer';
 const log = require('debug')('uploadRoutes');
 
 const router = express.Router();
@@ -16,7 +14,7 @@ router.get(
   a(async (req, res) => {
     const filename = await PostService.getImage(req.params.id);
 
-    res.sendFile(filename, sendFileOptions, (err) => {
+    res.sendFile(filename, sendFileOptions, err => {
       if (err) throw err;
     });
   })
@@ -50,7 +48,7 @@ router.get(
   a(async (req, res, next) => {
     const filename = await UserService.getAvatar(req.params.id);
 
-    res.sendFile(filename, sendFileOptions, (err) => {
+    res.sendFile(filename, sendFileOptions, err => {
       if (err) throw err;
     });
   })
@@ -62,7 +60,7 @@ router.put(
   auth,
   a((req, res, next) => {
     const uploadSingle = upload.single('avatar');
-    uploadSingle(req, res, async (err) => {
+    uploadSingle(req, res, async err => {
       if (err) next(err);
 
       const { file, user } = req;

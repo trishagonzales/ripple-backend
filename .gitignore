@@ -6,8 +6,8 @@ node_modules/
 # Build folder
 dist/
 
-# Assets
-public/
+# User uploaded images
+tmp/
 
-# API keys and secrets
+# API keys
 .env

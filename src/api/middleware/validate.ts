@@ -20,11 +20,11 @@ const schemas = {
 
   //  PROFILE
   profile: Joi.object({
-    firstName: Joi.string().max(255).required(),
-    lastName: Joi.string().max(255).required(),
+    firstName: Joi.string().max(255),
+    lastName: Joi.string().max(255),
     gender: Joi.string(),
-    age: Joi.number().min(1).max(1000),
-    bio: Joi.string().max(1024),
+    age: Joi.number().min(1).max(200),
+    bio: Joi.string().max(5000),
     location: Joi.string().max(255),
   }),
 
@@ -37,7 +37,7 @@ const schemas = {
   //  POST
   post: Joi.object({
     title: Joi.string().min(1).max(512).required(),
-    body: Joi.string().min(1).max(5000).required(),
+    body: Joi.string().min(1).max(10000).required(),
   }),
 };
 

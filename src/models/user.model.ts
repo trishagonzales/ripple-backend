@@ -53,8 +53,8 @@ const userSchema = new mongoose.Schema({
     lastName: { type: String, maxlength: 255, trim: true, required: true },
     gender: { type: String, enum: ['male', 'female', 'not specified'] },
     age: { type: Number, min: 1, max: 1000 },
-    bio: { type: String, maxlength: 1024 },
-    location: { type: String, maxlength: 255 },
+    bio: { type: String, maxlength: 5000 },
+    location: { type: String, maxlength: 500 },
   }),
 
   likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],

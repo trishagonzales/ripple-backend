@@ -19,7 +19,7 @@ export class UserService {
       .limit(pageSize)
       .sort(sortBy)
       .select('profile');
-    const profiles = users.map((user) => user.profile);
+    const profiles = users.map(user => user.profile);
 
     return profiles;
   }
@@ -44,7 +44,7 @@ export class UserService {
   //  UPDATE PROFILE
   public async updateProfile(newProfile: UserProfile) {
     const user = await UserModel.findById(this._id);
-    user.profile = { ...user.profile, ...newProfile };
+    user.profile = { avatar: user.profile.avatar, ...newProfile };
     const { profile } = await user.save();
 
     return profile;
@@ -59,7 +59,7 @@ export class UserService {
     await user.save();
 
     if (oldfile)
-      fs.unlink(process.cwd() + '/public/' + oldfile, (err) => {
+      fs.unlink(process.cwd() + '/public/' + oldfile, err => {
         if (err) throw err;
       });
   }
@@ -99,6 +99,11 @@ export class UserService {
     const user = await UserModel.findById(this._id);
     if (!user) throw new HttpError('User not found.', 404);
 
+    if (user.profile.avatar)
+      fs.unlink(process.cwd() + '/public/' + user.profile.avatar, err => {
+        if (err) throw err;
+      });
+
     await UserModel.deleteOne({ _id: this._id });
   }
 
@@ -109,7 +114,8 @@ export class UserService {
 
     const user = await UserModel.findById(this._id);
     //  User already liked this post
-    if (post.likes.indexOf(user._id) !== -1) throw new HttpError('User already liked this post.', 400);
+    if (post.likes.indexOf(user._id) !== -1)
+      throw new HttpError('User already liked this post.', 400);
     //  User haven't liked this post yet
     user.likedPosts.push(post._id);
     post.likes.push(user._id);

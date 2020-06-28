@@ -69,12 +69,17 @@ export class PostService {
   }
 
   //  UPDATE POST
-  public static async updatePost(newPost: { title: string; body: string }, postID: string, userID: string) {
+  public static async updatePost(
+    newPost: { title: string; body: string },
+    postID: string,
+    userID: string
+  ) {
     const post = await PostModel.findById(postID);
     if (!post) throw new HttpError('Post not found.', 404);
 
     //  Validate if user owns the post
-    if (JSON.stringify(post.author) != JSON.stringify(userID)) throw new HttpError('Access denied.', 401);
+    if (JSON.stringify(post.author) != JSON.stringify(userID))
+      throw new HttpError('Access denied.', 401);
 
     post.title = newPost.title;
     post.body = newPost.body;
@@ -88,6 +93,12 @@ export class PostService {
   public static async deletePost(postID: string) {
     const deletedPost = await PostModel.findByIdAndDelete(postID);
     if (!deletedPost) throw new HttpError('Post not found.', 404);
+
+    if (deletedPost.image)
+      fs.unlink(process.cwd() + '/public/' + deletedPost.image, err => {
+        if (err) throw err;
+      });
+
     return deletedPost;
   }
 
@@ -105,7 +116,8 @@ export class PostService {
     const post = await PostModel.findById(postID);
     if (!post) throw new HttpError('Post not found', 404);
     //  Validate if user owns the post
-    if (JSON.stringify(post.author) != JSON.stringify(userID)) throw new HttpError('Access denied.', 401);
+    if (JSON.stringify(post.author) != JSON.stringify(userID))
+      throw new HttpError('Access denied.', 401);
   }
 
   //  UPLOAD/UPDATE IMAGE
@@ -117,7 +129,7 @@ export class PostService {
     await post.save();
 
     if (oldfile)
-      fs.unlink(process.cwd() + '/public/' + oldfile, (err) => {
+      fs.unlink(process.cwd() + '/public/' + oldfile, err => {
         if (err) throw err;
       });
 

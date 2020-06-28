@@ -11,7 +11,6 @@ router.get(
   '/profiles',
   a(async (req: Request, res: Response, next: NextFunction) => {
     const { pageSize, pageNumber, sortBy } = req.query;
-
     const profiles = await UserService.getAllProfiles({ pageSize, pageNumber, sortBy });
     res.status(200).send(profiles);
   })
@@ -33,7 +32,6 @@ router.put(
   a(async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
     const validInput = validate(req.body, 'profile');
-
     const newProfile = await user.updateProfile(validInput);
     res.status(200).send(newProfile);
   })
