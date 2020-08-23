@@ -1,16 +1,16 @@
-import { Express } from 'express';
+import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import compression from 'compression';
+import bodyParser from 'body-parser';
+import { logger } from '../utils/logger';
 import morgan from 'morgan';
-import getAPI from '../api/index.api';
-import { errorHandler } from '../util/errorHandler';
-const log = require('debug')('express.loader');
 
-const expressLoader = (app: Express) => {
+const log = logger.extend('express-loader');
+
+export const expressLoader = () => {
   try {
-    //  Configurations
+    const app = express();
     app.use(helmet());
     app.use(cors({ exposedHeaders: 'x-auth-token' }));
     app.use(compression());
@@ -18,14 +18,11 @@ const expressLoader = (app: Express) => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(morgan('tiny'));
 
-    getAPI(app);
-
-    errorHandler(app);
-
     log('Express initialized ...');
+
+    return app;
   } catch (e) {
-    log(e);
+    log('Failed to configure express');
+    throw e;
   }
 };
-
-export default expressLoader;

@@ -1,17 +1,16 @@
-import express, { Request, Response, NextFunction } from 'express';
-import validate from '../middleware/validate';
-import auth from '../middleware/auth';
-import a from '../middleware/asyncWrap';
-import { UserService } from '../../services/UserService';
+import express from 'express';
+import { asyncWrap as a } from '../middlewares/asyncWrap';
+import { auth } from '../middlewares/auth.middleware';
+import validate from '../middlewares/validate';
+import { UserService } from '../../services/User.service';
 
 const router = express.Router();
 
 //  GET ALL PROFILES
 router.get(
   '/profiles',
-  a(async (req: Request, res: Response, next: NextFunction) => {
-    const { pageSize, pageNumber, sortBy } = req.query;
-    const profiles = await UserService.getAllProfiles({ pageSize, pageNumber, sortBy });
+  a(async (_req, res) => {
+    const profiles = await UserService.getAllProfiles();
     res.status(200).send(profiles);
   })
 );
@@ -19,7 +18,7 @@ router.get(
 //  GET ONE PROFILE
 router.get(
   '/profiles/:id',
-  a(async (req: Request, res: Response, next: NextFunction) => {
+  a(async (req, res) => {
     const profile = await UserService.getProfile(req.params.id);
     res.status(200).send(profile);
   })
@@ -27,9 +26,9 @@ router.get(
 
 //  UPDATE PROFILE
 router.put(
-  '/profiles',
+  '/profiles/me',
   auth,
-  a(async (req: Request, res: Response, next: NextFunction) => {
+  a(async (req, res) => {
     const user = req.user;
     const validInput = validate(req.body, 'profile');
     const newProfile = await user.updateProfile(validInput);

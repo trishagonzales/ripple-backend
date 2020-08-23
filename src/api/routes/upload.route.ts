@@ -1,10 +1,9 @@
 import express from 'express';
-import auth from '../middleware/auth';
-import a from '../middleware/asyncWrap';
-import upload, { sendFileOptions } from '../middleware/multer';
-import { UserService } from '../../services/UserService';
-import { PostService } from '../../services/PostService';
-const log = require('debug')('uploadRoutes');
+import { asyncWrap as a } from '../middlewares/asyncWrap';
+import { auth } from '../middlewares/auth.middleware';
+import upload, { sendFileOptions } from '../middlewares/multer';
+import { UserService } from '../../services/User.service';
+import { PostService } from '../../services/Post.service';
 
 const router = express.Router();
 
@@ -14,7 +13,7 @@ router.get(
   a(async (req, res) => {
     const filename = await PostService.getImage(req.params.id);
 
-    res.sendFile(filename, sendFileOptions, err => {
+    res.sendFile(filename, sendFileOptions, (err) => {
       if (err) throw err;
     });
   })
@@ -24,10 +23,10 @@ router.get(
 router.put(
   '/uploads/image/:id',
   auth,
-  a(async (req, res, next) => {
+  a(async (req, _res, next) => {
     const { params, user } = req;
     try {
-      await PostService.validateImageUpload(params.id, user._id);
+      await PostService.validateImageUpload(params.id, user.id);
       next();
     } catch (e) {
       next(e);
@@ -45,10 +44,10 @@ router.put(
 //  GET USER'S AVATAR / PROFILE PICTURE
 router.get(
   '/uploads/avatar/:id',
-  a(async (req, res, next) => {
+  a(async (req, res) => {
     const filename = await UserService.getAvatar(req.params.id);
 
-    res.sendFile(filename, sendFileOptions, err => {
+    res.sendFile(filename, sendFileOptions, (err) => {
       if (err) throw err;
     });
   })
@@ -60,7 +59,7 @@ router.put(
   auth,
   a((req, res, next) => {
     const uploadSingle = upload.single('avatar');
-    uploadSingle(req, res, async err => {
+    uploadSingle(req, res, async (err: any) => {
       if (err) next(err);
 
       const { file, user } = req;

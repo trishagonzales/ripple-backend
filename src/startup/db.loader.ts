@@ -1,19 +1,20 @@
+import { logger } from '../utils/logger';
 import mongoose from 'mongoose';
-import config from '../config/config';
-const log = require('debug')('db.loader');
+import { config } from '../utils/config';
 
-const dbLoader = async () => {
-	try {
-		await mongoose.connect(config.MONGO_URI, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useCreateIndex: true
-		});
+const log = logger.extend('db-loader');
 
-		log('Connected to MongoDB ...');
-	} catch (e) {
-		log('Failed to connect to MongoDB.\n' + e);
-	}
+export const dbLoader = async () => {
+  try {
+    await mongoose.connect(config.DATABASE_URL as string, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+
+    log('Connected to database ...');
+  } catch (e) {
+    log('Failed to connect to database');
+    throw e;
+  }
 };
-
-export default dbLoader;

@@ -1,17 +1,14 @@
 import mongoose from 'mongoose';
-import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import config from '../config/config';
-import { Post } from './post.model';
+import bcrypt from 'bcryptjs';
+import { config } from '../utils/config';
 
 export interface User {
   email: string;
+  emailValidated: boolean;
   password: string;
-  profile: UserProfile;
   likedPosts: mongoose.Schema.Types.ObjectId[];
-}
 
-export interface UserProfile {
   avatar?: string;
   firstName: string;
   lastName: string;
@@ -19,6 +16,7 @@ export interface UserProfile {
   age?: number;
   bio?: string;
   location?: string;
+  createdAt: Date;
 }
 
 export interface UserDocument extends User, mongoose.Document {
@@ -33,56 +31,54 @@ export interface UserModel extends mongoose.Model<UserDocument> {
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    minlength: 5,
+    minlength: 1,
     maxlength: 255,
     trim: true,
     unique: true,
     required: true,
   },
+  emailValidated: { type: Boolean, default: false },
   password: {
     type: String,
-    minlength: 5,
+    minlength: 1,
     maxlength: 255,
     trim: true,
     required: true,
   },
-
-  profile: new mongoose.Schema({
-    avatar: { type: String, maxlength: 255 },
-    firstName: { type: String, maxlength: 255, trim: true, required: true },
-    lastName: { type: String, maxlength: 255, trim: true, required: true },
-    gender: { type: String, enum: ['male', 'female', 'not specified'] },
-    age: { type: Number, min: 1, max: 1000 },
-    bio: { type: String, maxlength: 5000 },
-    location: { type: String, maxlength: 500 },
-  }),
-
   likedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+
+  avatar: { type: String, maxlength: 500 },
+  firstName: {
+    type: String,
+    minlength: 1,
+    maxlength: 255,
+    trim: true,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    minlength: 1,
+    maxlength: 255,
+    trim: true,
+    required: true,
+  },
+  gender: { type: String, enum: ['male', 'female', 'not specified'] },
+  age: { type: Number, min: 1, max: 200 },
+  bio: { type: String, minlength: 0, maxlength: 5000 },
+  location: { type: String, minlength: 0, maxlength: 255 },
+  createdAt: { type: Date, default: Date.now, required: true },
 });
 
-/**
- * Generate auth token using user's id
- * @returns JWT token
- */
 userSchema.methods.generateToken = function () {
-  return jwt.sign({ _id: this._id }, config.JWT_KEY);
+  return jwt.sign({ userId: this._id }, config.JWT_KEY as string, { expiresIn: '100d' });
 };
 
-/**
- * @param password input password
- * @returns Promise obj - whether input password is valid
- */
 userSchema.methods.validatePassword = function (password: string) {
-  return bcryptjs.compare(password, this.password);
+  return bcrypt.compare(password, this.password);
 };
 
-/**
- * @param passsword input password
- * @returns Promise obj - hashed password
- */
-userSchema.statics.hashPassword = async function (password) {
-  const salt = await bcryptjs.genSalt(10);
-  return bcryptjs.hash(password, salt);
+userSchema.statics.hashPassword = async function (password: string) {
+  return bcrypt.hash(password, await bcrypt.genSalt(10));
 };
 
 const UserModel: UserModel = mongoose.model<UserDocument, UserModel>('User', userSchema);

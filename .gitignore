@@ -1,13 +1,9 @@
 *.log
-
-# Dependencies
+.vscode
 node_modules/
+build/
 
-# Build folder
-dist/
-
-# User uploaded images
-tmp/
-
-# API keys
 .env
+.env.development
+.env.production
+.env.test

@@ -1,20 +1,25 @@
-require('dotenv').config();
-import express from 'express';
-import config from './config/config';
-import dbLoader from './startup/db.loader';
-import expressLoader from './startup/express.loader';
-const log = require('debug')('app');
+import dotenv from 'dotenv';
+import { Server } from 'http';
+import { dbLoader } from './startup/db.loader';
+import { expressLoader } from './startup/express.loader';
+import { getApi } from './api/index.api';
+import { errorHandler } from './utils/errorHandler';
+import { config } from './utils/config';
+import { logger as log } from './utils/logger';
 
-const app = express();
+dotenv.config();
 
-dbLoader();
-expressLoader(app);
+export let server: Server;
 
-//  Start server
-const server = app.listen(config.PORT, err => {
-  return err
-    ? log(`Failed to start server. ${err}`)
-    : log(`App started on port ${config.PORT} in ${process.env.NODE_ENV} mode.`);
-});
+try {
+  dbLoader();
+  const app = expressLoader();
 
-export default server;
+  getApi(app);
+
+  errorHandler(app);
+
+  server = app?.listen(config.PORT, () => log(`App started on port ${config.PORT}`));
+} catch (e) {
+  log(e);
+}
