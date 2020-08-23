@@ -8,7 +8,6 @@ export const dbLoader = async () => {
   try {
     await mongoose.connect(config.DATABASE_URL as string, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
       useCreateIndex: true,
     });
 
