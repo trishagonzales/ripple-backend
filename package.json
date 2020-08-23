@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && dotenv -c production node build/index.js",
+    "start": "node build/index.js",
     "dev": "dotenv -c development ts-node-dev src/index.ts",
     "build": "npx tsc",
+    "deploy": "git push heroku master",
     "test": "dotenv -c test npx jest"
   },
   "jest": {
